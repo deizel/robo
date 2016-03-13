@@ -15,7 +15,7 @@ class RobotShell extends Shell {
 /**
  * Start the shell and interactive console.
  *
- * @return void
+ * @return int|bool
  */
 	public function main() {
 		if (!class_exists('Robo\Runner')) {
@@ -33,8 +33,10 @@ class RobotShell extends Shell {
 
 		array_shift($_SERVER['argv']);
 
-		$runner = new Runner();
-		$runner->file = $this->params['config'];
+		$pathInfo = pathinfo($this->params['config']);
+		$roboFile = $pathInfo['basename'];
+		$roboDir = $pathInfo['dirname'];
+		$runner = new Runner(null, $roboFile, $roboDir);
 		$runner->execute();
 	}
 
@@ -44,21 +46,15 @@ class RobotShell extends Shell {
  * @return ConsoleOptionParser
  */
 	public function getOptionParser() {
-		$file = Runner::ROBOFILE;
-		if (Configure::check('Path.robofile')) {
-			$file = Configure::read('Path.robofile');
-		}
-
-		$parser = new ConsoleOptionParser('robot', false);
-		$parser->description(
-			'This shell provides a Robo runner.' .
-			"\n\n" .
-			'You will need to have robo installed for this Shell to work. '
-		)->addOption('config', [
-			'help' => __d('cake_console', 'Path to your RoboFile class'),
-			'default' => $file
-		]);
-		return $parser;
+		return (new ConsoleOptionParser('robot', false))
+			->description(
+				'This shell provides a Robo runner.' .
+				"\n\n" .
+				'You will need to have robo installed for this Shell to work. '
+			)
+			->addOption('config', [
+				'help' => __d('cake_console', 'Path to your RoboFile class'),
+				'default' => Configure::read('Path.robofile') ?: Runner::ROBOFILE
+			]);
 	}
-
 }

@@ -2,51 +2,21 @@
 
 namespace Gourmet\Robo\Lib;
 
-use Robo\Runner as RoboRunner;
+use Cake\Core\Configure;
+use Robo\Runner as BaseRunner;
 
-class Runner extends RoboRunner {
+class Runner extends BaseRunner {
 
-	public $file;
+	/**
+	 * Constructor.
+	 *
+	 * @param string $roboClass
+	 * @param string $roboFile
+	 * @param string $roboDir
+	 */
+	public function __construct($roboClass = null, $roboFile = null, $roboDir = null) {
+		parent::__construct($roboClass, $roboFile);
 
-	public function __construct() {
-		$this->file = self::ROBOFILE;
+		$this->dir = $roboDir ?: $this->dir . DS . 'build';
 	}
-
-	protected function loadRoboFile() {
-		if (!file_exists($this->file)) {
-			$this->output->writeln(sprintf('<comment>%s could not be found</comment>', $this->file));
-			$dialog = new \Symfony\Component\Console\Helper\DialogHelper();
-			if ($dialog->askConfirmation($this->output, sprintf("<question>Should I create %s? (y/n)</question> ", $this->file), false)) {
-				$this->initRoboFile();
-			}
-			exit;
-		}
-
-		require_once $this->file;
-
-		if (!class_exists(self::ROBOCLASS)) {
-			$this->output->writeln("<error>Class ". self::ROBOCLASS . " was not loaded</error>");
-			return false;
-		}
-		return true;
-	}
-
-	protected function initRoboFile() {
-		file_put_contents($this->file, <<<TEXT
-<?php
-
-use Robo\Tasks;
-
-class RoboFile extends Tasks {
-
-	// define public methods as commands.
-	// @see https://github.com/Codegyre/Robo/#examples
-
-}
-
-TEXT
-		);
-		$this->output->writeln("Created empty " . $this->file);
-	}
-
 }

@@ -28,6 +28,6 @@
 		}
 	},
 	"require": {
-		"codegyre/robo": "^0.6.0"
+		"codegyre/robo": "^0.7.0"
 	}
 }
