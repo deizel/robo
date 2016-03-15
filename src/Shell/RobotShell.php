@@ -33,9 +33,9 @@ class RobotShell extends Shell {
 
 		array_shift($_SERVER['argv']);
 
-		$pathInfo = pathinfo($this->params['config']);
-		$roboFile = $pathInfo['basename'];
-		$roboDir = $pathInfo['dirname'];
+		$roboFile = str_replace(ROOT . DS, '', $this->params['config']);
+		$roboDir = str_replace($roboFile, '', $this->params['config']);
+
 		$runner = new Runner(null, $roboFile, $roboDir);
 		$runner->execute();
 	}
